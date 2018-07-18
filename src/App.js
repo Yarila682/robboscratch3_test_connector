@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import {RobotConrolAPI} from 'Robboscratch3_DeviceControlAPI';
+const {RobotControlAPI} =  require ('Robboscratch3_DeviceControlAPI');
+const {DeviceControlAPI} =  require ('Robboscratch3_DeviceControlAPI');
 
 
 
@@ -12,7 +13,8 @@ constructor(){
 
   super();
 
-  this.RCA =  new RobotConrolAPI();
+  this.RCA =  new RobotControlAPI();
+  this.DCA  = new DeviceControlAPI();
 
 }
 
@@ -24,7 +26,7 @@ connectorTest(){
 
 stopSearchProcess(){
 
-if (this.RCA instanceof RobotConrolAPI){
+if (this.RCA instanceof RobotControlAPI){
 
     this.RCA.stopSearchProcess();
 
@@ -35,7 +37,7 @@ if (this.RCA instanceof RobotConrolAPI){
 stopDataRecievingProcess(){
 
 
-  if (this.RCA instanceof RobotConrolAPI){
+  if (this.RCA instanceof RobotControlAPI){
 
       this.RCA.stopDataRecievingProcess();
 
@@ -49,7 +51,7 @@ stopDataRecievingProcess(){
 setRobotPower(){
 
 
-  if (this.RCA instanceof RobotConrolAPI){
+  if (this.RCA instanceof RobotControlAPI){
 
     let leftMotorPower = document.getElementById("leftMotorPower").value;
     let rightMotorPower = document.getElementById("rightMotorPower").value;
@@ -57,6 +59,40 @@ setRobotPower(){
     this.RCA.setRobotPower(leftMotorPower,rightMotorPower);
 
   }
+
+}
+
+flashFirmware(){
+
+    var ff = document.getElementById("firmware_flashing");
+
+    this.DCA.flashFirmware(0,(status) => {
+
+            this.createPortsDiv(ff,status);
+    });
+
+}
+
+
+createPortsDiv(root,element){
+
+      var el = document.createElement('div');
+      el.innerHTML = element;
+      root.appendChild(el);
+
+}
+
+searchPorts(){
+
+    var ports = document.getElementById("ports");
+
+  this.DCA.searchPorts((port) => {
+
+
+
+        this.createPortsDiv(ports,port.path);
+
+  });
 
 }
 
@@ -68,13 +104,15 @@ setRobotPower(){
           <h2>Welcome to React</h2>
         </div>
 
-        
+
 
         <div>
 
               <button class="connector-start-stop" onClick={this.connectorTest.bind(this)}>Connector test!</button>
               <button class="connector-start-stop" onClick={this.stopSearchProcess.bind(this)}>Connector stop!</button>
               <button class="connector-start-stop" onClick={this.stopDataRecievingProcess.bind(this)}>Stop data recieve!</button>
+              <button class="connector-start-stop" onClick={this.flashFirmware.bind(this)}>Flash firmware!</button>
+              <button class="connector-start-stop" onClick={this.searchPorts.bind(this)}>Search ports!</button>
 
         </div>
 
@@ -88,6 +126,16 @@ setRobotPower(){
         <div>
 
             <button  onClick={this.setRobotPower.bind(this)}> Set motors power. </button>
+
+        </div>
+
+        <div id="ports">
+
+
+        </div>
+
+        <div id="firmware_flashing">
+
 
         </div>
 
